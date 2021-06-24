@@ -1,0 +1,88 @@
+El uso del trazado de rayos como aproximación a ondas electromagnéticas no es una idea reciente, aunque su alto coste computacional ha hecho que su popularidad haya crecido de forma notable en los últimos años al haber sido posible su uso de forma general.
+
+La principal disciplina en busca de implantaciones de esta técnica es la de gráficos generados computacionalmente, en la que se aplican estas aproximaciones a la luz de modo que se puedan conseguir resultados realistas de una forma más sencilla comparado con la rasterización habitual en la industria.
+
+Encontramos en la bibliografía de este ámbito numerosos capítulos dedicados a la implantación del trazado de rayos que han sido recuperados en este trabajo.
+Aunque las bases geométricas son similares, las características electromagnéticas de los rayos de luz simplifican parte de los cálculos que debemos corregir en nuestro caso.
+
+\subsection{Geometría}
+
+Comenzamos con la geometría del problema caracterizando los rayos a evaluar.
+Su composición es muy simple: constan de un punto de origen y una dirección.
+En su transcurso se encontrarán con las paredes del mapa, contra las que rebotarán para seguir su recorrido en la zona de interés.
+
+Para poder modelizar este comportamiento se considera el rayo como una recta.
+En este caso el origen $O$ será un punto de esta directa, con su dirección siendo el vector director $\vb{d}$ de la misma de modo que sigue la ecuación
+\begin{equation}
+    O + t\vb{d}
+\end{equation}
+con $t\in \mathbb{R}$.
+
+Las paredes serán planos definidos con cuatro puntos como extremos, a partir de los cuáles se calcula su vector normal.
+Así, los puntos de intersección de las rectas con alguno de estos planos serán los puntos donde los rayos golpearán las paredes, que servirán de origen para los rayos trasmitidos y reflejados que se generen.
+
+Para determinar cuál es este punto partimos de la consideración de que el vector normal del plano --denominado aquí $\vu{n}$-- será perpendicular a cualquier vector contenido en dicho plano, en este caso el definido como diferencia entre el punto de intersección $X$ y el punto donde está definida la normal\footnote{Esta consideración proviene del caso de una superficie general; en este caso la normal será la misma independientemente de dónde se defina, pudiendo elegir cualquier punto del plano.} $P$ de tal forma que su producto escalar es nulo
+\begin{equation}\label{eq:Plano-recta1}
+    (X-P)\vdot\vu{n} = 0
+\end{equation}
+
+$X$ es un punto de la recta, por lo que debe cumplir, para un cierto $t_i$
+\begin{equation}\label{eq:recta_ti}
+    X = O + t_i\vb{d}
+\end{equation}
+que es posible incluir en \eqref{eq:Plano-recta1} de forma que
+\begin{equation}
+    ((O + t_i\vb{d})-P)\vdot\vu{n} = 0
+\end{equation}
+que se puede manipular para obtener $t_i$
+\begin{equation}\label{eq:t_i}
+    \begin{aligned}
+        ((O + t_i\vb{d})-P)\vdot\vu{n} &= 0 \\
+        (O - P)\vdot\vu{n} + t_i\vb{d}\vdot\vu{n}  &= 0 \\
+        t_i\vb{d}\vdot\vu{n} &= - (O - P)\vdot\vu{n}\\
+        t_i &= -\frac{(O - P)\vdot\vu{n}}{\vb{d}\vdot\vu{n}}\\
+        t_i &= \frac{(P-O)\vdot\vu{n}}{\vb{d}\vdot\vu{n}}
+    \end{aligned}
+\end{equation}
+
+Con este valor es posible ahora usar la Ec.~\eqref{eq:recta_ti} para obtener las coordenadas del punto de impacto, pero no en cualquier caso.
+
+Es necesario tener varias consideraciones a la hora de determinar $t_i$.
+La primera de ellas es que es posible obtener un valor negativo: al modelizar el rayo como una recta se abre la posibilidad de encontrar un punto de intersección en la dirección contraria al vector director, por lo que consideraremos que no hay intersección si $t_i < 0$.
+
+Otra de las posibilidades es que la recta sea paralela al plano, de tal forma que no exista un punto de intersección.
+Si esto ocurre, el producto escalar del denominador de la Ec.~\ref{eq:t_i} tomará un valor nulo, por lo que es necesario evitar la operación.
+
+Es más, es posible optimizar este caso en un grado algo mayor al tener en cuenta que ángulos bajos de la normal del vector y la dirección de la recta también indicarán que la intersección se producirá a una distancia muy lejana, por lo que a efectos prácticos no se producirá --habrá otra pared más cerca--.
+Así, en el caso de que $\vb{d}\vdot\vu{n} < 10^{-4}$ se interpretará que no hay un punto de intersección con la pared a evaluar.
+
+La última de las consideraciones tiene que ver con los errores de redondeo.
+A la hora de calcular $t_i$ o las coordenadas del punto de impacto es posible que el punto de intersección obtenido no se encuentre en el plano de incidencia, lo que provoca futuros errores con los rayos reflejados y transmitidos.
+Para evitarlo, solo se considerará la intersección con los planos si $t_i > 10^{-3}$.
+
+Esta condición puede parecer confusa pero su razón se puede ver en la Figura~\ref{fig:condicion_interseccion}.
+Como se explicaba, en ocasiones los puntos de intersección no se encuentran exactamente en los planos de incidencia, por lo que alguno de los dos rayos generados encontrarán un nuevo punto de intersección en el mismo plano, pero a una distancia minúscula.
+
+Estos nuevos puntos no solo son erróneos --no se deberían producir--, sino que además pueden llegar a producir valores totalmente distorsionados de la potencia de la señal como se explicará en secciones sucesivas.
+
+\vspace*{2cm}
+
+Una vez definidos los rayos y el entorno solo falta la modelización de los receptores de señal.
+
+La interpretación anterior de rayos y paredes hace que solo se tengan en cuenta los puntos de partida e impacto de las rectas, pero no su camino entre ellos.
+Es este camino el objetivo del problema, pues son los puntos en los que la señal de WiFi es útil.
+
+Para solventarlo se colocan a lo largo del entorno generado una serie de esferas que harán las veces de antenas receptoras.
+Estas esferas registrarán la potencia de los rayos que impacten contra ellas, de modo que sea posible obtener en los puntos en los que se han colocado la potencia total de señal que una antena colocada en el mismo lugar.
+
+La elección de modelizar estos receptores como esferas parte de los múltiples rayos que impactarán sobre ellas.
+Al lanzar un gran número de rayos, todos los receptores recibirán varios --más aún con los sucesivos rebotes--, por lo que no podremos registrarlos todos.
+
+La elección correcta será la del rayo que impacte de forma más directa, ya que el resto de ellos serán residuos fruto del volumen de la esfera que no están presentes en la realidad.
+
+Es posible determinar este rayo teniendo en cuenta en el ángulo de incidencia respecto a la normal de la esfera, pero este paso es evitable teniendo en cuenta que el decaimiento de la potencia es función de la distancia recorrida.
+
+\subsection{Electromagnetismo}
+
+\subsection{Antenas}
+

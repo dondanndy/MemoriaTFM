@@ -1,0 +1,168 @@
+\documentclass[12pt,dvipsnames,a4paper,oneside]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish, es-tabla]{babel}
+\usepackage{mlmodern}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{makeidx}
+\usepackage{graphicx}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{float}
+\usepackage{hyperref}
+% \usepackage{wrapfig}
+
+\usepackage[bottom=2.5cm, top = 2.5cm, right=2cm, left=2cm, bindingoffset=0.5cm]{geometry}
+
+% \usepackage{tikz}
+% \usepackage{pgfplots}
+% \pgfplotsset{compat=newest}
+% \usetikzlibrary{arrows,shapes,positioning,calc,babel,pgfplots.groupplots, pgfplots.statistics}
+
+\usepackage[font=small,justification=centering]{caption}
+\usepackage{subcaption}
+\usepackage{pgfkeys} % LATEX
+\usepackage{pgffor}
+\usepackage{adjustbox}
+\usepackage{bm}
+\usepackage{pdfpages}
+\usepackage{siunitx}
+\usepackage{multirow}
+% \usepackage{multicol}
+% \usepackage{afterpage}
+\usepackage{xcolor}
+\usepackage{soul}
+\usepackage{listings}
+\usepackage{titlesec}
+\usepackage[italicdiff]{physics}
+% \usepackage[onehalfspacing]{setspace}
+
+%------------------------------------------------------------------------------
+%               Encabezado y pie de página
+%------------------------------------------------------------------------------
+
+\usepackage{fancyhdr}
+
+% aqui definimos el encabezado de las paginas pares e impares.
+\lhead[]{\textsc{Simulación parelela de la \\ emisión de WiFi con trazado de rayos}}
+\chead[]{}
+\rhead[]{}
+\lfoot[]{}
+\cfoot[]{\thepage}
+\rfoot[]{}
+\renewcommand{\footrulewidth}{0pt}
+\renewcommand{\headrulewidth}{0.5pt}
+
+
+% aqui definimos el encabezado y pie de pagina de la pagina inicial de un capitulo.
+\fancypagestyle{plain}{
+	\fancyhead[L]{}
+	\fancyhead[C]{}
+	\fancyhead[R]{}
+	\fancyfoot[L]{}
+	\fancyfoot[C]{}
+	\fancyfoot[R]{}
+	\renewcommand{\headrulewidth}{0pt}
+	\renewcommand{\footrulewidth}{0pt}
+}
+
+\pagestyle{fancy}
+
+
+\begin{document}
+
+%------------------------------------------------------------------------------
+%                             Portada
+%------------------------------------------------------------------------------
+
+% \includepdf[pages=1]{portada.pdf}
+
+\tableofcontents
+
+%------------------------------------------------------------------------------
+%                             Objetivos
+%------------------------------------------------------------------------------
+
+% \newpage
+% \section{Objetivos}
+
+% \input{tex/objetivos.tex}
+
+%------------------------------------------------------------------------------
+%                             Introduccion
+%------------------------------------------------------------------------------
+\setcounter{table}{0}
+\setcounter{equation}{0}
+\setcounter{figure}{0}
+
+\rhead[]{\small{1. Introducción}}
+
+\newpage
+\section{Introducción y objetivos}
+
+% \input{tex/introduccion.tex}
+
+%------------------------------------------------------------------------------
+%                             Fundamento teórico
+%------------------------------------------------------------------------------
+\setcounter{table}{0}
+\setcounter{equation}{0}
+\setcounter{figure}{0}
+
+\rhead[]{\small{2. Fundamento teórico}}
+
+\newpage
+\section{Fundamento teórico}
+
+\input{tex/fundamento_teorico.tex}
+
+%------------------------------------------------------------------------------
+%                             Implementación en paralelo
+%------------------------------------------------------------------------------
+\setcounter{table}{0}
+\setcounter{equation}{0}
+\setcounter{figure}{0}
+
+\newpage
+\section{Implementación en paralelo}
+
+% \input{tex/implementación_paralelo.tex}
+
+%------------------------------------------------------------------------------
+%                             Resultados
+%------------------------------------------------------------------------------
+\setcounter{table}{0}
+\setcounter{equation}{0}
+\setcounter{figure}{0}
+
+\newpage
+\section{Resultados}
+
+% \input{tex/resultados.tex}
+
+%------------------------------------------------------------------------------
+%                             Conclusiones
+%------------------------------------------------------------------------------
+
+\newpage
+\section{Conclusiones}
+
+% \input{tex/conclusion.tex}
+
+%------------------------------------------------------------------------------
+%                             Bibliografía
+%------------------------------------------------------------------------------
+
+\newpage
+\section{Bibliografía}
+
+\begingroup
+    \renewcommand{\section}[2]{}%
+    \bibliography{refs} 
+    \bibliographystyle{ieeetr}
+\endgroup
+    
+\end{document}

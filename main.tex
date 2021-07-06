@@ -13,11 +13,13 @@
 \usepackage[table,xcdraw]{xcolor}
 \usepackage{float}
 \usepackage{hyperref}
-% \usepackage{wrapfig}
+\usepackage{wrapfig}
+\usepackage{xfrac}
 
 \usepackage[bottom=2.5cm, top = 2.5cm, right=2cm, left=2cm, bindingoffset=0.5cm]{geometry}
 
-% \usepackage{tikz}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, babel}
 % \usepackage{pgfplots}
 % \pgfplotsset{compat=newest}
 % \usetikzlibrary{arrows,shapes,positioning,calc,babel,pgfplots.groupplots, pgfplots.statistics}
@@ -35,9 +37,11 @@
 % \usepackage{afterpage}
 \usepackage{xcolor}
 \usepackage{soul}
-\usepackage{listings}
+% \usepackage{listings}
 \usepackage{titlesec}
 \usepackage[italicdiff]{physics}
+\usepackage[Algoritmo]{algorithm}
+\usepackage{algpseudocode}
 % \usepackage[onehalfspacing]{setspace}
 
 %------------------------------------------------------------------------------
@@ -97,11 +101,11 @@
 \setcounter{table}{0}
 \setcounter{equation}{0}
 \setcounter{figure}{0}
-\setcounter{page}{0}
-
-\rhead[]{\small{1. Introducción}}
+\setcounter{page}{1}
 
 \newpage
+\rhead[]{\small{1. Introducción}}
+
 \section{Introducción y objetivos}
 
 % \input{tex/introduccion.tex}
@@ -113,24 +117,26 @@
 \setcounter{equation}{0}
 \setcounter{figure}{0}
 
+\newpage
 \rhead[]{\small{2. Fundamento teórico}}
 
-\newpage
 \section{Fundamento teórico}
 
-\input{tex/fundamento_teorico.tex}
+% \input{tex/fundamento_teorico.tex}
 
 %------------------------------------------------------------------------------
-%                             Implementación en paralelo
+%                    Implementación para la simulación
 %------------------------------------------------------------------------------
 \setcounter{table}{0}
 \setcounter{equation}{0}
 \setcounter{figure}{0}
 
 \newpage
-\section{Implementación en paralelo}
+\rhead[]{\small{3. Implementación}}
 
-% \input{tex/implementación_paralelo.tex}
+\section{Implementación para la simulación}
+
+% \input{tex/implementacion.tex}
 
 %------------------------------------------------------------------------------
 %                             Resultados

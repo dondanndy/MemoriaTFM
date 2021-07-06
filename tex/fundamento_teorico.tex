@@ -7,6 +7,7 @@ Aunque las bases geométricas son similares, las características electromagnét
 
 \subsection{Geometría}
 
+\subsubsection{Rayos}
 Comenzamos con la geometría del problema caracterizando los rayos a evaluar.
 Su composición es muy simple: constan de un punto de origen y una dirección.
 En su transcurso se encontrarán con las paredes del mapa, contra las que rebotarán para seguir su recorrido en la zona de interés.
@@ -18,6 +19,7 @@ En este caso el origen $O$ será un punto de esta directa, con su dirección sie
 \end{equation}
 con $t\in \mathbb{R}$.
 
+\subsubsection{Paredes}
 Las paredes serán planos definidos con cuatro puntos como extremos, a partir de los cuáles se calcula su vector normal.
 Así, los puntos de intersección de las rectas con alguno de estos planos serán los puntos donde los rayos golpearán las paredes, que servirán de origen para los rayos trasmitidos y reflejados que se generen.
 
@@ -51,7 +53,7 @@ Es necesario tener varias consideraciones a la hora de determinar $t_i$.
 La primera de ellas es que es posible obtener un valor negativo: al modelizar el rayo como una recta se abre la posibilidad de encontrar un punto de intersección en la dirección contraria al vector director, por lo que consideraremos que no hay intersección si $t_i < 0$.
 
 Otra de las posibilidades es que la recta sea paralela al plano, de tal forma que no exista un punto de intersección.
-Si esto ocurre, el producto escalar del denominador de la Ec.~\ref{eq:t_i} tomará un valor nulo, por lo que es necesario evitar la operación.
+Si esto ocurre, el producto escalar del denominador de la Ec.~\eqref{eq:t_i} tomará un valor nulo, por lo que es necesario evitar la operación.
 
 Es más, es posible optimizar este caso en un grado algo mayor al tener en cuenta que ángulos bajos de la normal del vector y la dirección de la recta también indicarán que la intersección se producirá a una distancia muy lejana, por lo que a efectos prácticos no se producirá --habrá otra pared más cerca--.
 Así, en el caso de que $\vb{d}\vdot\vu{n} < 10^{-4}$ se interpretará que no hay un punto de intersección con la pared a evaluar.
@@ -60,13 +62,84 @@ La última de las consideraciones tiene que ver con los errores de redondeo.
 A la hora de calcular $t_i$ o las coordenadas del punto de impacto es posible que el punto de intersección obtenido no se encuentre en el plano de incidencia, lo que provoca futuros errores con los rayos reflejados y transmitidos.
 Para evitarlo, solo se considerará la intersección con los planos si $t_i > 10^{-3}$.
 
+\begin{figure}[H]
+    \centering
+    \input{fig/condicion_interseccion.tex}
+    \caption{Puntos de intersección en presencia de errores de redondeo: al estar fuera del plano, la evaluación del rayo reflejado encuentra otro punto de intersección en la misma pared. Los círculos huecos y líneas sólidas indican los puntos y rayos correctos; los círculos rellenos y líneas punteadas representan los puntos y rayos calculados erróneamente.}
+    \label{fig:condicion_interseccion}
+\end{figure}
+
 Esta condición puede parecer confusa pero su razón se puede ver en la Figura~\ref{fig:condicion_interseccion}.
-Como se explicaba, en ocasiones los puntos de intersección no se encuentran exactamente en los planos de incidencia, por lo que alguno de los dos rayos generados encontrarán un nuevo punto de intersección en el mismo plano, pero a una distancia minúscula.
+Debido a errores de redondeo, los rayos reflejados y transmitidos no tienen su origen en el plano de incidencia, por lo que al evaluarlos, encontraremos que la pared con la que impactaría sería, de nuevo, el mismo plano.
+
+Con la condición introducida, no habrá intersecciones estos planos tan cercanos, por lo que el rayo será libre de obviarlo y buscar un rebote en alguna otra pared, como debería haber hecho sin los errores de redondeo.
+
+Aunque en este ejemplo solo se han representado los rayos reflejados, en el caso de que el punto de intersección se encuentre --de nuevo, siguiendo la simetría del ejemplo-- delante del plano tendríamos la misma situación al evaluar el rayo transmitido.
 
 Estos nuevos puntos no solo son erróneos --no se deberían producir--, sino que además pueden llegar a producir valores totalmente distorsionados de la potencia de la señal como se explicará en secciones sucesivas.
 
-\vspace*{2cm}
+Una vez determinado el punto de impacto, es necesaria una última comprobación.
+Al igual que al hablar de las rectas se ponía su manifiesto su extensión infinita, es posible tener la misma consideración con los planos, es decir, será posible encontrar puntos de intersección en cualquier punto del espacio.
 
+Para imponer la presencia de los puntos de intersección entre los límites de la pared es necesario recurrir a sus esquinas --los puntos sobre los que se definen--.
+Tras determinar el punto de intersección, se comprueba, para cada eje, que su coordenada se encuentra entre los valores máximos y mínimos de las coordenadas de cada eje.
+
+Será necesario añadir un cierto épsilon para, de nuevo, evitar los errores de redondeo, y así evitar que el plano no «sea invisible» al rayo.
+Por tanto, la comprobación a realizar será, que para cada eje $i$, las coordenadas estén contenidas en $[\min_i(c_{ij})-\varepsilon, \max_i(c_{ij})+\varepsilon]$ siendo $c_{ij}$ la coordenada $i$ de la esquina $j$.
+
+\subsubsection*{Geometría tras los impactos}
+
+Una vez obtenido el punto de impacto del rayo en la pared, queda evaluar los rayos obtenidos a partir de él.
+
+\begin{wrapfigure}{r}{0.3\textwidth}
+    \vspace*{-0.75cm}
+    \centering
+    \input{fig/reflexion.tex}
+    \caption{Reflexión especular.}
+    \label{fig:reflexion}
+\end{wrapfigure}
+En cada uno de estos impactos se generá un rayo reflejado y un rayo transmitido.
+El rayo reflejado seguirá una reflexión especular, de modo que su dirección seguirá
+\begin{equation}
+    \label{eq:reflexion}
+    \vb{d}_s = 2(\vu{n} \vdot \vb{d}_i)\vu{n} - \vb{d}_i
+\end{equation}
+donde $\vb{d}_i$ indica la dirección del rayo incidente y $\vb{d}_s$ la del rayo reflejado, ambos vectores normalizados.
+
+La Ec.~\eqref{eq:reflexion} supone la disposición de las direcciones tal y como se indica en la Figura~\ref{fig:reflexion}, de tal forma que ambas se indican partiendo desde la pared.
+Desde la perspectiva del rayo incidente, esta dirección será la inversa a su dirección de incidencia.
+
+\subsubsection*{Determinación del ángulo de impacto}
+
+Como se explica en siguientes secciones, será necesario evaluar el ángulo de impacto del rayo en la pared para obtener la potencia de los rayos generados.
+
+Este valor se obtiene sin problema teniendo en cuenta que su coseno será el producto escalar de la normal y el vector de la dirección incidente --más concretamente de su inverso, como se puede observar de nuevo en la Figura~\ref{fig:reflexion}--, pero es necesario hacer una puntualización.
+
+El cálculo de la normal del plano se define a partir de los tres primeros puntos introducidos para cada pared.
+Por ello, dependiendo del orden en el que se escriban será posible que la normal tome un sentido o su opuesto.
+
+En las ecuaciones \eqref{eq:t_i} y \eqref{eq:reflexion} ese cambio de signo es irrelevante, pero no en este caso.
+Si la normal está definida en la dirección opuesta a la de llegada del rayo, este ángulo será el complementario, como se puede observar en la Figura~\ref{fig:angulo_incidencia}.
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \include{fig/angulo_impacto_1.tex}
+        \caption{Normal en la dirección de llegada del rayo.}
+    \end{subfigure}
+    \hspace*{10pt}
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \include{fig/angulo_impacto_2.tex}
+        \caption{Normal en la dirección opuesta a la llegada del rayo.}
+    \end{subfigure}
+    \caption{Dependiendo de la definición de la normal, el ángulo de incidencia puede variar.}
+    \label{fig:angulo_incidencia}
+\end{figure}
+
+Para corregir este comportamiento bastará con tomar el valor absoluto del producto escalar mencionado anteriormente, de modo que su arco coseno esté limitado entre 0 y $\sfrac{\pi}{2}$ y se obtenga el ángulo correcto.
+
+\subsubsection{Receptores}
 Una vez definidos los rayos y el entorno solo falta la modelización de los receptores de señal.
 
 La interpretación anterior de rayos y paredes hace que solo se tengan en cuenta los puntos de partida e impacto de las rectas, pero no su camino entre ellos.
@@ -75,14 +148,114 @@ Es este camino el objetivo del problema, pues son los puntos en los que la seña
 Para solventarlo se colocan a lo largo del entorno generado una serie de esferas que harán las veces de antenas receptoras.
 Estas esferas registrarán la potencia de los rayos que impacten contra ellas, de modo que sea posible obtener en los puntos en los que se han colocado la potencia total de señal que una antena colocada en el mismo lugar.
 
-La elección de modelizar estos receptores como esferas parte de los múltiples rayos que impactarán sobre ellas.
-Al lanzar un gran número de rayos, todos los receptores recibirán varios --más aún con los sucesivos rebotes--, por lo que no podremos registrarlos todos.
+Así, se necesario buscar la intersección de las rectas de las que se compone cada rayo con cada una de estas esferas.
+Teniendo en cuenta que la ecuación de una esfera de radio $r$ centrada en $C$ es 
+\begin{equation}
+    \label{eq:esfera}
+    \norm{X-C}^2 = r^2
+\end{equation}
+y recuperando la Ec.~\eqref{eq:recta_ti} es posible combinarlas de modo que tengan una intersección para algún $t_i$
+\begin{equation}
+    \norm{O + t_i\vb{d} -C}^2 = r^2
+\end{equation}
 
-La elección correcta será la del rayo que impacte de forma más directa, ya que el resto de ellos serán residuos fruto del volumen de la esfera que no están presentes en la realidad.
+Tras manipularla, llegamos a poder obtener $t_i$ a partir de una ecuación cuadrática de modo que
+\begin{equation}
+    \label{eq:esfera_ti}
+    t_i = \frac{-2\vu{n}\vdot(O - C) \pm \sqrt{(2\vu{n}\vdot(O - C))^2 - 4\norm{\vu{n}}^2(\norm{O-C}^2-r^2)}}{2\norm{\vu{n}}^2} \equiv \vu{n}\vdot(O - C) \pm \sqrt{\Delta}
+\end{equation}
+con 
+\begin{equation}
+    \Delta = (2\vu{n}\vdot(O - C))^2 - 4\norm{\vu{n}}^2(\norm{O-C}^2-r^2)
+\end{equation}
 
-Es posible determinar este rayo teniendo en cuenta en el ángulo de incidencia respecto a la normal de la esfera, pero este paso es evitable teniendo en cuenta que el decaimiento de la potencia es función de la distancia recorrida.
+El discriminante $\Delta$ de esta solución indicará las características del punto de intersección.
+
+Si toma un valor negativo la recta y la esfera no se encontrarán; si es nulo, ambas soluciones serán idénticas, es decir, la recta toca a la esfera de forma tangencial.
+Por último, valores mayores que cero indicarán que el rayo penetra en la esfera, con lo que hay dos puntos de intersección: uno de entrada y otro de salida.
+
+Es únicamente este último caso el que se busca en la simulación, ya que un contacto tangencial no tiene relevancia física para el problema.
+Por ello, solo se considerará la existencia de un impacto en el caso de que el discriminante de la Ec.~\eqref{eq:esfera_ti} sea mayor que cero.
+
+Es posible, por las mismas razones que se explicaban en el caso de los planos, que las soluciones tomen valores negativos.
+De nuevo, no se considerarán estos casos como impactos de los rayos al no encontrarse en su dirección de propagación.
+
+Se obtienen dos soluciones para $t_i$.
+Si ambas son positivas, está claro que la solución en el caso de la suma en la Ec.~\eqref{eq:esfera_ti} será siempre mayor que la de la resta, por lo que es en este último caso en el que la distancia de impacto es menor.
+
+Se tomará ese valor --el de la resta-- como solución final para determinar el punto de intersección de rayo y esfera, recurriendo de nuevo a la Ec.~\eqref{eq:recta_ti} para obtener sus coordenadas.
+
+% QUIZÁ ESTO NO VAYA AQUI.
+% La elección de modelizar estos receptores como esferas parte de los múltiples rayos que impactarán sobre ellas.
+% Al lanzar un gran número de rayos, todos los receptores recibirán varios --más aún con los sucesivos rebotes--, por lo que no podremos registrarlos todos.
+
+% La elección correcta será la del rayo que impacte de forma más directa, ya que el resto de ellos serán residuos fruto del volumen de la esfera que no están presentes en la realidad.
+
+% Es posible determinar este rayo teniendo en cuenta en el ángulo de incidencia respecto a la normal de la esfera, pero este paso es evitable teniendo en cuenta que el decaimiento de la potencia es función de la distancia recorrida.
 
 \subsection{Electromagnetismo}
 
+Con las bases de la geometría del problema establecidas, resta abordar la física del problema: la interacción electromagnética de los rayos con el medio.
+
+Como punto de partida es necesario abordar el comportamiento de estos rayos en su camino anterior a cualquier impacto contra alguno de los obstáculos, para lo que es habitual el uso de la ecuación de transmisión de Friis, definida como\cite{Antennas}
+\begin{equation}
+    \label{eq:Friis}
+    P_t = P_i \left( \frac{\lambda}{4\pi r} \right)^2
+\end{equation}
+donde $P_t$ indica la potencia de una señal de longitud de onda $\lambda$ a una distancia $r$, siendo emitida en su origen por una potencia $P_i$.
+
+Esta ecuación es una aproximación que no siempre es aplicable.
+Su uso se limita a la modelización de la señal emitida y captada por antenas, en las que se omite cualquier efecto de reflexión entre ellas.
+
+Para poder hacer esta consideración, se establece el límite
+\begin{equation}
+    r > \frac{2D^2}{\lambda}
+\end{equation}
+como rangos válidos, con $D$ siendo el tamaño característico de las antenas --en el caso de que sean distintos, se considera el mayor de ellos--.
+
+Teniendo en cuenta que en este caso se usarán ondas de WiFi de $2.4\si{\giga\hertz}$, su longitud de onda será $\lambda\approx 0.12\si{\meter}$.
+Las antenas a usar tienen un tamaño de entre 10 y 20 cm, así que la Ec.~\eqref{eq:Friis} será valida a distancias superiores a unos 70cm.
+
+Tras su recorrido libre en el aire, a su llegada al punto de impacto contra alguna de las paredes u obstáculos el rayo seguirá las leyes de Fresnel para la frontera entre dos medios.
+
+En este caso son solo de interés las expresiones de los coeficientes de reflexión y transmisión de la potencia, que describen la proporción de energía de los rayos reflejados y transmitidos respectivamente.
+
+Estas ecuaciones tendrán expresiones distintas dependiendo de si tratamos ondas s-polarizadas --con el campo eléctrico perpendicular al plano de incidencia-- o p-polarizadas --con el campo eléctrico paralelo al plano de incidencia--.
+\begin{equation}
+    \label{eq:coeff_reflx_1}
+    \begin{aligned}
+        R_\mathrm{s} &= \left|\frac{Z_2 \cos(\theta_i) - Z_1 \cos(\theta_t)}{Z_2 \cos(\theta_i) + Z_1 \cos(\theta_t)}\right|^2\\
+        R_\mathrm{p} &= \left|\frac{Z_2 \cos(\theta_t) - Z_1 \cos(\theta_i)}{Z_2 \cos(\theta_t) + Z_1 \cos(\theta_i)}\right|^2
+    \end{aligned}
+\end{equation}
+donde $Z_i$ hace referencia a la impedancia de la onda en cada medio, dada por
+\begin{equation}
+    Z = \sqrt{\frac{j\omega\mu}{\sigma + j\omega\varepsilon}}
+\end{equation}
+con $\mu$ indicando la permeabilidad magnética del medio, $\varepsilon$ la permivitidad dieléctrica y $\omega$ la frecuencia de la onda en cuestión.
+
+Asumiendo que ambos medios son no magnéticos --es decir, $\mu = \mu_0$, como va a ser el caso en las simulaciones a realizar-- las expresiones de la Ec.~\eqref{eq:coeff_reflx_1} pasan a depender de los índices de refracción de modo que
+\begin{equation}
+    \label{eq:coeff_reflx_1}
+    \begin{aligned}
+        R_\mathrm{s} &= \left|\frac{n_1 \cos(\theta_i) - n_2\cos(\theta_t)}{n_1 \cos(\theta_i) + n_2\cos(\theta_t)}\right|^2\\
+        R_\mathrm{p} &= \left|\frac{n_1 \cos(\theta_t) - n_2\cos(\theta_i)}{n_1 \cos(\theta_t) + n_2\cos(\theta_i)}\right|^2
+    \end{aligned}
+\end{equation}
+
+% En la sección anterior se han sentado las bases geométricas para estudiar la propagación de los rayos, pero se ha obviado cualquier discursión sobre su interacción con las paredes u obstáculos, que obedecerá a leyes del electromagnetismo.
+
+% Los impactos contra cualquiera de los obstáculos van a seguir las leyes de Fresnel, siendo
+
 \subsection{Antenas}
+
+Una vez establecidas las bases para la evaluación de los rayos en el área de interés es necesario abordar su origen.
+
+La emisión de señal de WiFi por parte de la antena de un router será omnidireccional, por lo que los rayos que emerjan desde su posición en la simulación se distribuirán en todas las direcciones.
+La potencia con la que parta cada rayo no será la misma debido al patrón de radiación característica de todas las antenas.
+
+La directividad de una antena se define para cada valor angular como la razón de la potencia de emisión de dicha antena respecto a la potencia de una antena que emite de forma isotrópica\cite{Antennas}.
+
+
+
 

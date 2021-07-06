@@ -1,0 +1,43 @@
+% Primera version
+% \begin{tikzpicture}
+%     %Pared
+%     \draw[thick] (-6,0) -- (-2,0);
+
+%     \draw[-Triangle] (-6,1.5) -- (-4.5,0);
+%     \draw[-Triangle, dashed] (-4.5,0) -- (-3.5,-1);
+
+%     \draw (-4.5,0) circle [radius=2pt];
+%     \filldraw (-3.5,-1) circle [radius=2pt, fill=black];
+
+%     % Flecha del medio.
+%     \draw[-{Triangle[width=18pt,length=8pt]}, line width=10pt] (-0.5,1) -- (0.5, 1);
+
+%     % Segunda parte
+%     %Pared
+%     \draw[thick] (2,0) -- (6,0);
+
+%     \draw (2.5,0) circle [radius=2pt];
+%     \draw[-Triangle] (2.5,0) -- (4,1.5);
+
+%     \filldraw (3.5,-1) circle [radius=2pt, fill=black];
+%     \draw[-Triangle, dashed] (3.5,-1) -- (4.5,0);
+% \end{tikzpicture}
+
+% Segunda version.
+\begin{tikzpicture}
+    %Pared
+    \draw[very thick] (-5,0) -- (5,0);
+
+    \draw[-Stealth] (-3.5,2) -- (-2.5,1);
+    \draw (-2.5,1) -- (-1.5,0);
+    \draw[-Stealth, dashed] (-1.5,0) -- (-0.5,-1);
+
+    \draw (-1.5,0) circle [radius=3pt];
+    \filldraw (-0.5,-1) circle [radius=3pt, fill=black];
+
+    \draw[-Stealth] (-1.5,0) -- (0.5,2);
+    \draw[dashed, -Stealth] (-0.5,-1) -- (0,-0.5);
+    \draw[dashed, -Stealth] (0,-0.5) -- (0.5,0);
+
+    \filldraw (0.5,0) circle [radius=3pt, fill=black];
+\end{tikzpicture}

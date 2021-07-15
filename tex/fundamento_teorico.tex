@@ -243,19 +243,62 @@ Asumiendo que ambos medios son no magnéticos --es decir, $\mu = \mu_0$, como va
     \end{aligned}
 \end{equation}
 
+Es posible eliminar el término dependiente del ángulo transmitido usando la ley de Snell de la refracción, de modo que las Ecs.\eqref{eq:coeff_reflx_1} pasan a ser
+\begin{equation}
+    \label{eq:coeff_reflx_2}
+    \begin{aligned}
+        R_\mathrm{s} &= \left|\frac{n_1 \cos(\theta_i) - n_2\sqrt{1 - \left[ \frac{n_1}{n_2}\sin(\theta_i)\right]^2}}{n_1 \cos(\theta_i) + n_2\sqrt{1 - \left[ \frac{n_1}{n_2}\sin(\theta_i)\right]^2}}\right|^2\\
+        R_\mathrm{p} &= \left|\frac{n_1 \sqrt{1 - \left[ \frac{n_1}{n_2}\sin(\theta_i)\right]^2} - n_2\cos(\theta_i)}{n_1 \sqrt{1 - \left[ \frac{n_1}{n_2}\sin(\theta_i)\right]^2} + n_2\cos(\theta_i)}\right|^2
+    \end{aligned}
+\end{equation}
+
+Asumiendo que el medio 1 es el aire, con índice de refracción igual a 1, se obtiene la expresión final usada en la simulación
+\begin{equation}
+    \label{eq:coeff_reflx_3}
+    \begin{aligned}
+        R_\mathrm{s} &= \left|\frac{\cos(\theta_i) - \sqrt{\varepsilon_r - \sin[2](\theta_i)}}{\cos(\theta_i) + \sqrt{\varepsilon_r - \sin[2](\theta_i)}}\right|^2\\
+        R_\mathrm{p} &= \left|\frac{\varepsilon_r\cos(\theta_i) - \sqrt{\varepsilon_r - \sin[2](\theta_i)}}{\varepsilon_r\cos(\theta_i) + \sqrt{\varepsilon_r - \sin[2](\theta_i)}}\right|^2
+    \end{aligned}
+\end{equation}
+donde se ha utilizado la relación $n = \sqrt{\varepsilon}$, dejando las expresiones dependiendo solo de la permitividad dieléctrica del medio y el ángulo de incidencia.
+
+Para cada uno de los dos casos, la potencia transmitida será
+\begin{equation}
+    T_i = 1 - R_i
+\end{equation}
+por consevación de la energía.
+
+Queda por aclarar la polarización de la ondas emitidas.
+La aproximación tomada es asumir ondas no polarizadas, o lo que es lo mismo, con polarización circular, de modo que las energías de los campos eléctrico y magnético son las mismas y es posible tomar un coeficiente de reflexión de 
+\begin{equation}
+    R = \frac{1}{2} \left[ R_\mathrm{s} + R_\mathrm{p} \right]
+\end{equation}
+
+Por último, también existirá en los rebotes un fenómeno de difración en el que se generan rayos de forma isotrópica.
+Aunque es un comportamieno que se incluye en algunos modelos de propagación en exteriores --donde las antenas direccionales tienen una potencia muy concentrada--, su efecto en interiores es despreciable, donde las potencias de emisión son mucho menores.
+
+Por ello, no se implementarán en este modelo.
+La potencia de cálculo extra requerida no compensa su contribución a los resultados, de modo que, al igual que en otros modelos de propagación interior, se considerará que no se produce.
+
 % En la sección anterior se han sentado las bases geométricas para estudiar la propagación de los rayos, pero se ha obviado cualquier discursión sobre su interacción con las paredes u obstáculos, que obedecerá a leyes del electromagnetismo.
 
 % Los impactos contra cualquiera de los obstáculos van a seguir las leyes de Fresnel, siendo
 
 \subsection{Antenas}
 
-Una vez establecidas las bases para la evaluación de los rayos en el área de interés es necesario abordar su origen.
+Una vez establecidas las bases para la evaluación de los rayos en el área de interés es necesario abordar su origen y su recepción.
 
-La emisión de señal de WiFi por parte de la antena de un router será omnidireccional, por lo que los rayos que emerjan desde su posición en la simulación se distribuirán en todas las direcciones.
-La potencia con la que parta cada rayo no será la misma debido al patrón de radiación característica de todas las antenas.
+La emisión y recepción de estos rayos se hará mediante antenas que tendrán cierta direccionalidad fruto de su simetría que será necesario considerar.
+Aquí aparece le concepto de direccionalidad, donde se parametriza la intensidad de la emisión o recepción dependiendo del ángulo de emisión/incidencia del ángulo.\cite{Antennas}
 
-La directividad de una antena se define para cada valor angular como la razón de la potencia de emisión de dicha antena respecto a la potencia de una antena que emite de forma isotrópica\cite{Antennas}.
+Esta directividad está definida como
+\begin{equation}
+    D = \frac{4\pi U}{P_\text{rad}}
+\end{equation}
+donde $U$ indica la potencia por unidad de ángulo sólido y $P_\text{rad}$ la potencia total emitida.
 
+En el caso de la antena receptora se obtiene la misma expresión, teniendo en el denominador la pontencia recibida.
+Este valor de recepción es a veces llamado «ganancia», aunque su origen y concepto es el mismo que la direccionalidad.
 
-
+En el caso de que una antena emita isotrópicamente la direccionalidad será la misma para todos los ángulos, de modo que es posible definir la direccionalidad como el ratio entre la potencia de emisión entre la potencia de emisión si tuviese una emisión isotrópica.
 

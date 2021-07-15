@@ -1,5 +1,25 @@
 Partiendo de las bases descritas en la sección anterior la simulación consistirá, de forma general, en lanzar rayos y acumular los resultados de los receptores.
 
+Aprovechando las ventajas de la programación orientada a objetos, se considerarán los siguientes clases:
+\begin{itemize}
+    \item \textbf{Rayo} Esta clase contendrá el punto de partida y el vector de dirección del rayo, así como la potencia en el origen.
+    \item \textbf{Pared} En esta clase se incluirán los cuatro puntos de los extremos de la pared, a partir de los que se calculará su normal, también almacenada. Además, contendrá el valor de permeabilidad dieléctrica de su material.
+    \item \textbf{Receptor} Esta clase incluye el origen de la esfera y su radio.
+\end{itemize}
+
+Las clases de las paredes y los receptores implementarán métodos que tengan de entrada un cierto rayo y que determinarán si habrá algún impacto entre ellos.
+
+A la hora de almacenar los datos de los receptores no es posible acumular los valores de todos los rayos impactados ya que daría valores muy altos totalmente irreales.
+El hecho de que muchos de los rayos impacten contra los receptores es fruto de la modelización como esfera, dando más volumen del que realmente tiene la esfera.
+
+Por ello, se dividirá el reconocimiento de impactos dependiendo de los rebotes que haya recibido.
+De esta forma se podrán separar los rayos que se reciben de forma directa de los rebotados.
+
+A la hora de registrar la potencia recibida, para cada uno de los rebotes que ha sufrido el rayo, se elegirá aquel con una potencia mayor, al ser el que impacta de forma más directa con la esfera receptora, comportamiento buscado.
+
+Estos valores se registrarán en una matriz en la que se considera a cada fila como cada receptor, y cada columna como estos valores de rebotes.
+Así, tras finalizar la evaluación de rayos se acumularán todos los valores en cada fila, siendo el resultado final para cada receptor.
+
 \begin{algorithm}
     \caption{Bucle Principal}
     \label{euclid}
@@ -39,10 +59,10 @@ Esta elección es totalmente arbitraria: todos los rayos son independientes entr
 Para optimizar el uso de memoria de la pila se reservará toda la memoria que se podría usar antes de iniciar el bucle y así no necesitar movimientos posteriores.
 El tamaño necesario vendrá determinado por el número de rebotes que se quieran registrar.
 
-\begin{figure}[H]
-    \centering
-    \input{fig/memoria_pila.tex}
-\end{figure}
+% \begin{figure}[H]
+%     \centering
+%     \input{fig/memoria_pila.tex}
+% \end{figure}
 
 En la Figura~\ref{fig:memoria_pila} se indica el árbol generado por un rayo, donde en cada impacto nacen dos rayos.
 Considerando que siempre se evalúa el rayo reflejado --en esta representación, el camino de la izquierda-- podría parecer que se deberá reservar memoria para todos los rayos restantes, pero es posible un uso menor.
@@ -119,6 +139,13 @@ Así, se asociará la dirección $x$ al ángulo azimutal y la dirección $y$ a l
 Queda determinar el número de hilos en cada bloque.
 En general, la memoria disponible para su uso compartido es una cantidad baja.
 En el caso de la tarjeta gráfica usada, es de 48 KB\cite{Nvidia}.
+
+\begin{figure}[H]
+    \centering
+    \include{fig/CUDA_angulos.tex}
+    \caption{aa}
+    \label{fig:CUDA_angulos}
+\end{figure}
 
 Esta cantidad no permite lanzar bloques con un número grande de hilos, aunque dependerá del número de receptores y los rebotes que se quieran registrar.
 A modo de ejemplo, al colocar unos 40 receptores y registrar los rayos hasta 5 rebotes, con valores de precisión simple --es decir, 4 bytes--, podremos lanzar bloques con 60 hilos como máximo.

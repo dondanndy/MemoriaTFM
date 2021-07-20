@@ -41,4 +41,29 @@
         
     }
 
+    % Bloques extremo izquerda
+    \node[anchor=south] at (13.25, -0.75) {\small{Bloque}};
+    \node[anchor=north] at (13.25, -0.75) {\small{(89, 0)}};
+
+    \node[anchor=south] at (13.25, -2.25) {\small{Bloque}};
+    \node[anchor=north] at (13.25, -2.25) {\small{(89, 1)}};
+
+    \node[anchor=south] at (13.25, -5.75) {\small{Bloque}};
+    \node[anchor=north] at (13.25, -5.75) {\small{(89, 44)}};
+
+
+    %Puntitos
+    \foreach \i in {1.5, 3, ..., 10, 14}
+    {
+        \node[anchor=east] at (\i-0.5, -4) {\vdots};
+    }
+
+    \foreach \j in {0, -1.5, -5}
+    {
+        \node[anchor=east] at (11.25, \j-0.75) {\ldots};
+    }
+
+    \node[anchor=east] at (11.25, -4) {$\ddots$};
+
+
 \end{tikzpicture}

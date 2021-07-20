@@ -121,7 +121,7 @@ En general, a la hora de paralelizar un algoritmo es necesario hacer duplicacion
 En los casos de muy alta paralelización como este es posible encontrarse con ciertas limitaciones.
 
 La tarjeta gráfica usada en este caso ha sido una Nvidia GTX1070, sobre la que es posible el uso de la librería de Nvidia CUDA.
-Esta tarjeta cuenta con 1920 núcleos agrupados en ??? multiprocesadores.
+Esta tarjeta cuenta con 1920 núcleos agrupados en 15 multiprocesadores.
 
 La estrategia de paralelización consistirá en asignar un rayo a cada hilo, que contará con su matriz de datos correspondiente donde registrará los impactos para luego ser acumulada en los datos finales.
 
@@ -143,7 +143,7 @@ En el caso de la tarjeta gráfica usada, es de 48 KB\cite{Nvidia}.
 \begin{figure}[H]
     \centering
     \include{fig/CUDA_angulos.tex}
-    \caption{aa}
+    \caption{Esquema con la asignación de ángulos a cada bloque de hilos.}
     \label{fig:CUDA_angulos}
 \end{figure}
 

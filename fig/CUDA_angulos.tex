@@ -51,6 +51,14 @@
     \node[anchor=south] at (13.25, -5.75) {\small{Bloque}};
     \node[anchor=north] at (13.25, -5.75) {\small{(89, 44)}};
 
+    % Bloques abajo
+    \foreach \i in {1.5, 3, ...,10}
+    {
+        \pgfmathtruncatemacro{\bloquei}{\i/1.5 - 1};
+        \node[anchor=south] at (\i-0.75, -5.75) {\small{Bloque}};
+        \node[anchor=north] at (\i-0.75, -5.75) {\small{(\bloquei, 44)}};
+    }
+
 
     %Puntitos
     \foreach \i in {1.5, 3, ..., 10, 14}

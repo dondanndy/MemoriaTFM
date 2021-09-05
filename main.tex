@@ -75,6 +75,7 @@
 
 \pagestyle{fancy}
 
+% \setlength{\parskip}{1em}
 
 \begin{document}
 
@@ -86,6 +87,10 @@
 
 \tableofcontents
 
+\renewcommand{\thetable}{\thesection.\arabic{table}}
+\renewcommand{\thefigure}{\thesection.\arabic{figure}}
+\renewcommand{\theequation}{\thesection.\arabic{equation}}
+
 %------------------------------------------------------------------------------
 %                             Objetivos
 %------------------------------------------------------------------------------
@@ -94,6 +99,8 @@
 % \section{Objetivos}
 
 % \input{tex/objetivos.tex}
+
+\setlength{\parskip}{1em}
 
 %------------------------------------------------------------------------------
 %                             Introduccion
@@ -106,6 +113,7 @@
 \newpage
 \rhead[]{\small{1. Introducción}}
 
+\vspace*{0.2cm}
 \section{Introducción y objetivos}
 
 \input{tex/introduccion.tex}
@@ -120,6 +128,7 @@
 \newpage
 \rhead[]{\small{2. Fundamento teórico}}
 
+\vspace*{0.2cm}
 \section{Fundamento teórico}
 
 \input{tex/fundamento_teorico.tex}
@@ -134,9 +143,26 @@
 \newpage
 \rhead[]{\small{3. Implementación}}
 
+\vspace*{0.2cm}
 \section{Implementación para la simulación}
 
 \input{tex/implementacion.tex}
+
+%------------------------------------------------------------------------------
+%                             Entorno de pruebas
+%------------------------------------------------------------------------------
+\setcounter{table}{0}
+\setcounter{equation}{0}
+\setcounter{figure}{0}
+
+\newpage
+\rhead[]{\small{4. Entorno de pruebas}}
+
+\newpage
+\vspace*{0.2cm}
+\section{Entorno de pruebas}
+
+\input{tex/pruebas.tex}
 
 %------------------------------------------------------------------------------
 %                             Resultados
@@ -146,9 +172,13 @@
 \setcounter{figure}{0}
 
 \newpage
+\rhead[]{\small{5. Resultados}}
+
+\newpage
+\vspace*{0.2cm}
 \section{Resultados}
 
-\input{tex/resultados.tex}
+% \input{tex/resultados.tex}
 
 %------------------------------------------------------------------------------
 %                             Conclusiones

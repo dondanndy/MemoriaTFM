@@ -9,7 +9,7 @@ La proliferación del uso de ondas electromagnéticas como sustitución de conex
 
 Determinar la propagación de este tipo de ondas en estos escenarios resulta una parte fundamental en el estudio de su rendimiento y abre la puerta a aplicaciones adicionales además de la comunicación, como pueden ser algoritmos de posicionamiento en interiores.
 
-De forma teórica existen técnicas de resolución de ecuaciones diferenciales aplicadas al campo electromagnético como el FDTD --\textit{Finite-difference time-domain method}--, especialmente modificadas para adaptarse a la relación entre campos eléctrico y magnético.
+De forma teórica existen técnicas de resolución de ecuaciones diferenciales aplicadas al campo electromagnético como el FDTD --\textit{Finite-difference time-domain method}--, especialmente modificadas para adaptarse a la relación entre campos eléctrico y magnético.\cite{Compilation}
 
 Este tipo de métodos numéricos, aunque precisos, requieren un alto coste computacional.
 Estan planteados como métodos generales, aplicables a cualquier tipo de onda electromagnética por lo que se pueden tomar aproximaciones que relajen los requisitos.
@@ -39,10 +39,10 @@ La estrategia de emisión de rayos no es escasa en la bibliografía en este ámb
 La correcta determinación de la propagación en entornos controlados habilita la predicción con una alta precisión del rendimiento de los receptores en cualquier zona del mismo, lo que permite no solo una correcta colocación de los mismos --en caso de que se quiera garantizar una correcta recepción en cualquier zona-- si no que abre la puerta a posibles aplicaciones como las de posicionamiento local.
 
 La alternativa a la simulación de esta propagación es la medición sobre el terreno de los valores de la onda, bien eligiendo ciertos puntos de forma homogénea o buscando lugares concretos de interés.
-Esta técnica, conocida como \textit{fingerprinting}, es muy lenta y obliga a desplazarse a la zona de interés, por lo que la opción de realizar una simulación presenta una gran ventaja a la hora de ahorrar tiempo y costes, además de permitir una precisón mayor pudiendo obtener los valores de recepción en cualquier punto de la zona a medir.
+Esta técnica, conocida como \textit{fingerprinting}, es muy lenta y obliga a desplazarse a la zona de interés, por lo que la opción de realizar una simulación presenta una gran ventaja a la hora de ahorrar tiempo y costes, además de permitir una precisón mayor pudiendo obtener los valores de recepción en cualquier punto de la zona a medir.\cite{People}
 
 La aproximación de ondas electromagnéticas a rayos proviene del concepto de frente de ondas, en el que se considera un cierto plano de propagación de las ondas.
-Según las ecuaciones de Maxwell los campos eléctrico y magnético son perpendicualares a este frente, y con ellos aparece el vector de Poynting.
+Según las ecuaciones de Maxwell los campos eléctrico y magnético son perpendicualares a este frente, y con ellos aparece el vector de Poynting.\cite{Compilation}
 
 Este vector, definido como el producto vectorial de ambos campos, contiene en su módulo la potencia de la onda --tomando medias temporales--, y en su dirección la dirección de propagación.
 En ausencia de cambios en el índice de refracción del medio --es decir, en medios homogéneos--, la dirección del frente de ondas y del vector de Poyinting no se modificará, así que la onda seguirá su trayectoria en línea recta.
@@ -66,7 +66,7 @@ Con estas divisiones se busca cuál es la posición del rayo en cada momento de 
 
 Si la geometría de la zona no es regular es posible definir zonas con distintos tamaños y así poder tener zonas con una granularidad mayor.
 
-\subsubsection*{Bounding box}
+\subsubsection*{\textit{Bounding box}}
 
 Otra de las técnicas viene heredada de la resolución del problema de colisiones habitualmente usando en videojuegos.
 
@@ -93,24 +93,25 @@ Esta estrategia ha sido la utilizada en esta simulación.
 En lugar de triángulos, en este caso se han usado rectángulos, aunque la base es la misma.
 En secciones posteriores se abodará la geometría necesaria para estos casos.
 
-Al igual que en el caso del bounding box, será necesario colocar receptores en aquellos lugares de interés de modo que sea posible registrar los parámetros necesarios en ciertos puntos del mapa.
+Al igual que en el caso del \textit{bounding box}, será necesario colocar receptores en aquellos lugares de interés de modo que sea posible registrar los parámetros necesarios en ciertos puntos del mapa.
 
 
-\subsection{Geometría}
+\subsection{Geometría del trazado de rayos}
 
 \subsubsection{Rayos}
-La primera sección se centrará en la geometría del problema caracterizando los rayos a evaluar.
+Los rayos a evaluar son el elemento básico a caracterizar.
 Su composición es muy simple: constan de un punto de origen y una dirección.
 En su transcurso se encontrarán con las paredes del mapa, contra las que rebotarán para seguir su recorrido en la zona de interés.
 
 Para poder modelizar este comportamiento se considera el rayo como una recta.
-En este caso el origen $O$ será un punto de esta directa, con su dirección siendo el vector director $\vb{d}$ de la misma de modo que sigue la ecuación
+En este caso el origen $O$ será un punto de esta recta, con su dirección siendo el vector director $\vb{d}$ de la misma de modo que sigue la ecuación
 \begin{equation}
     O + t\vb{d}
 \end{equation}
 con $t\in \mathbb{R}$.
 
 \subsubsection{Paredes}
+\label{sec:paredes}
 
 \begin{wrapfigure}{r}{0.35\textwidth}
     \centering
@@ -255,7 +256,7 @@ Para ello se recurre a la ley de Snell para la refracción, pero teniendo en cue
 Al igual que la dirección también tendrán como origen el punto de impacto, debido a la bidimensionalidad del plano.
 La Figura~\ref{fig:snell_plano} indica el caso de una pared con un cierto grosor.
 
-Los ángulos de entrada y salida serán los mismos sin más que comprobar la ley de Snell.
+Los ángulos de entrada y salida serán los mismos sin más que comprobar la ley de Snell.\cite{Graficos}
 Para el primer borde
 \begin{equation}
     n_1\sin(\theta_1) = n_2\sin(\theta_2)
@@ -386,7 +387,7 @@ Bastará con pasar a coordenadas esféricas la dirección del ángulo incidente,
 
 % Es posible determinar este rayo teniendo en cuenta en el ángulo de incidencia respecto a la normal de la esfera, pero este paso es evitable teniendo en cuenta que el decaimiento de la potencia es función de la distancia recorrida.
 
-\subsection{Electromagnetismo}
+\subsection{Electromagnetismo en los impactos}
 
 Con las bases de la geometría del problema establecidas, resta abordar la física del problema: la interacción electromagnética de los rayos con el medio.
 
@@ -416,7 +417,7 @@ Tras su recorrido libre en el aire, a su llegada al punto de impacto contra algu
 
 En este caso son solo de interés las expresiones de los coeficientes de reflexión y transmisión de la potencia, que describen la proporción de energía de los rayos reflejados y transmitidos respectivamente.
 
-Estas ecuaciones tendrán expresiones distintas dependiendo de si tratamos ondas s-polarizadas --con el campo eléctrico perpendicular al plano de incidencia-- o p-polarizadas --con el campo eléctrico paralelo al plano de incidencia--.
+Estas ecuaciones tendrán expresiones distintas dependiendo de si tratamos ondas s-polarizadas --con el campo eléctrico perpendicular al plano de incidencia-- o p-polarizadas --con el campo eléctrico paralelo al plano de incidencia--.\cite{5G_Simulation}
 \begin{equation}
     \label{eq:coeff_reflx_1}
     \begin{aligned}
@@ -428,7 +429,7 @@ donde $Z_i$ hace referencia a la impedancia de la onda en cada medio, dada por
 \begin{equation}
     Z = \sqrt{\frac{j\omega\mu}{\sigma + j\omega\varepsilon}}
 \end{equation}
-con $\mu$ indicando la permeabilidad magnética del medio, $\varepsilon$ la permivitidad dieléctrica y $\omega$ la frecuencia de la onda en cuestión.
+con $\mu$ indicando la permeabilidad magnética del medio, $\varepsilon$ la permivitidad dieléctrica y $\omega$ la frecuencia angular de la onda en cuestión.
 
 Asumiendo que ambos medios son no magnéticos --es decir, $\mu = \mu_0$, como va a ser el caso en las simulaciones a realizar-- las expresiones de la Ec.~\eqref{eq:coeff_reflx_1} pasan a depender de los índices de refracción de modo que
 \begin{equation}
@@ -505,6 +506,7 @@ Su parametrización es importante en entornos urbanos por la alta cantidad de ed
 Por ello, por los mismos argumentos utilizados para los rayos difractados se aplican en este caso: el coste computacional no compensa el escaso efecto que producirían en los resultados, por lo que no se considerarán en la simulación.
 
 \subsection{Antenas}
+\label{sec:antenas}
 
 Una vez establecidas las bases para la evaluación de los rayos en el área de interés es necesario abordar su origen y su recepción.
 
@@ -517,7 +519,7 @@ Esta directividad está definida como
 \end{equation}
 donde $U$ indica la potencia por unidad de ángulo sólido y $P_\text{rad}$ la potencia total emitida.
 
-En el caso de la antena receptora se obtiene la misma expresión, teniendo en el denominador la pontencia recibida.
+En el caso de la antena receptora se obtiene la misma expresión, teniendo en el denominador la potencia recibida.
 Este valor de recepción es a veces llamado «ganancia», aunque su origen y concepto es el mismo que la direccionalidad.
 
 En el caso de que una antena emita isotrópicamente la direccionalidad será la misma para todos los ángulos, de modo que es posible definir la direccionalidad como la razón entre la potencia de emisión entre la potencia de emisión si tuviese una emisión isotrópica.
@@ -525,7 +527,7 @@ En el caso de que una antena emita isotrópicamente la direccionalidad será la 
 La obtención de la función de forma general se obtiene de forma numérica.
 En el caso de antenas con un diseño con alguna simetría existen expresiones analíticas, pero no podrán ser aplicadas en entornos reales como el que se trata en este trabajo.
 
-Así, se recurrió a las utilidades proporcionadas en el Antenna Toolbox de Matlab, que permite definir antenas con un diseño arbitrario compuesta de una amplia serie de materiales y con ellos obtener su direccionalidad.
+Así, se recurrió a las utilidades proporcionadas en el \textit{Antenna Toolbox} de MATLAB, que permite definir antenas con un diseño arbitrario compuesta de una amplia serie de materiales y con ellos obtener su direccionalidad.\cite{MATLAB}
 
 Las antenas utilizadas son antenas cilíndricas, como es habitual en el caso de comunicaciones WiFi.
 En la Figura~\ref{fig:antenas} se incluyen dos imágnes de las antenas utilizadas.
@@ -565,7 +567,7 @@ Para esta antena el patrón es muy suave, no es necesaria una precisión mayor.
     \label{fig:patron_matlab}
 \end{figure}
 
-Otra de las propiedades que proporciona esta herramienta es la de determinar la polarización de la antena a partir del campo magnético y eléctrico en varios puntos de la misma, de la misma forma que lo hacía para el patrón de emisión.
+Otra de las propiedades que proporciona esta herramienta es la de determinar la polarización de la antena a partir del campo magnético y eléctrico en varios puntos de la misma, de la misma forma que lo hacía para el patrón de emisión.\cite{MATLAB}
 
 En la Figura~\ref{fig:eh_matlab} se puede observar el patrón de la antena simulada.
 Se puede observar que en prácticamente en todas las zonas la polarización es circular --es decir, no está polarizada-- obteniendo intensidades similares en ambos campos.

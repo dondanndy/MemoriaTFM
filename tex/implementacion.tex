@@ -3,26 +3,50 @@ Partiendo de las bases descritas en la sección anterior la simulación consisti
 Aprovechando las ventajas de la programación orientada a objetos, se considerarán los siguientes clases:
 \begin{itemize}
     \item \textbf{Rayo} Esta clase contendrá el punto de partida y el vector de dirección del rayo, así como la potencia en el origen.
-    \item \textbf{Pared} En esta clase se incluirán los cuatro puntos de los extremos de la pared, a partir de los que se calculará su normal, también almacenada. Además, contendrá el valor de permeabilidad dieléctrica de su material.
-    \item \textbf{Receptor} Esta clase incluye el origen de la esfera y su radio.
+    \item \textbf{Pared} En esta clase se incluirán los cuatro puntos de los extremos de la pared, a partir de los que se calculará su normal, también almacenada. Además, contendrá el valor de permeabilidad dieléctrica de su material. Implementará métodos para determinar si un rayo la impacta, y obtener tanto el punto de impacto como el rayo reflejado.
+    \item \textbf{Receptor} Esta clase incluye el origen de la esfera y su radio. Al igual que la clase de las paredes implementará métodos para determinar si un rayo la impacta, y obtener la potencia teniendo en cuenta el patrón de emisión de la antena que modeliza.
 \end{itemize}
 
-Las clases de las paredes y los receptores implementarán métodos que tengan de entrada un cierto rayo y que determinarán si habrá algún impacto entre ellos.
+La simulación comienza con la obtención del entorno virtual.
+A partir de medidas en el entorno real, se escriben en un archivo las esquinas de todas las paredes de entorno, así como los límites de los objetos.
 
-A la hora de almacenar los datos de los receptores no es posible acumular los valores de todos los rayos impactados ya que daría valores muy altos totalmente irreales.
-El hecho de que muchos de los rayos impacten contra los receptores es fruto de la modelización como esfera, dando más volumen del que realmente tiene la esfera.
+Con estas esquinas se construye un vector con los objetos de paredes, creados a partir de estas esquinas.
+Este vector constiuirá el mapa de la simulación.
 
-Por ello, se dividirá el reconocimiento de impactos dependiendo de los rebotes que haya recibido.
-De esta forma se podrán separar los rayos que se reciben de forma directa de los rebotados.
+Una vez se ha creado el mapa se crean los receptores, con la posición y su distancia.
+Aunque la implementación permite cualquier radio, en este caso se limitó a $2.5$cm.
 
-A la hora de registrar la potencia recibida, para cada uno de los rebotes que ha sufrido el rayo, se elegirá aquel con una potencia mayor, al ser el que impacta de forma más directa con la esfera receptora, comportamiento buscado.
+El siguiente paso será leer el patrón de radiación de las antenas.
+Ya que para esta simulación el de el emisor y el receptor es el mismo, solo se hará en una ocasión, y se utilizarán también estos datos para la generación de rayos.
 
-Estos valores se registrarán en una matriz en la que se considera a cada fila como cada receptor, y cada columna como estos valores de rebotes.
-Así, tras finalizar la evaluación de rayos se acumularán todos los valores en cada fila, siendo el resultado final para cada receptor.
+Este patrón, como se explicaba en la Sección~\ref{sec:antenas}, está generado directamente por MATLAB, y su formato es el de una matriz en el que cada uno de los ejes indica un ángulo.
+Su lectura y uso sigue el mismo formato.
+
+Una vez cargados todos los datos, se inicia el bucle principal, que consiste en dos bucles \textit{for} anidados que recorran el ángulo azimutal y el ángulo de elevación, avanzando con un cierto valor prefijado.
+En las subsecciones posteriores se profundizará en la evaluación de cada rayo.
+
+Una vez se han lanzado todos los rayos se acumulan los resultados --de nuevo, en las siguientes subsecciones se discutirá en detalle la estructura de memoria para estos resultados-- y se escriben en un archivo para su análisis posterior.
+
+El Algoritmo~\ref{alg:euclid} recoge en pseudocódigo todo el proceso.
+
+% \ref{sec:paredes}
+
+% Las clases de las paredes y los receptores implementarán métodos que tengan de entrada un cierto rayo y que determinarán si habrá algún impacto entre ellos.
+
+% A la hora de almacenar los datos de los receptores no es posible acumular los valores de todos los rayos impactados ya que daría valores muy altos totalmente irreales.
+% El hecho de que muchos de los rayos impacten contra los receptores es fruto de la modelización como esfera, dando más volumen del que realmente tiene la esfera.
+
+% Por ello, se dividirá el reconocimiento de impactos dependiendo de los rebotes que haya recibido.
+% De esta forma se podrán separar los rayos que se reciben de forma directa de los rebotados.
+
+% A la hora de registrar la potencia recibida, para cada uno de los rebotes que ha sufrido el rayo, se elegirá aquel con una potencia mayor, al ser el que impacta de forma más directa con la esfera receptora, comportamiento buscado.
+
+% Estos valores se registrarán en una matriz en la que se considera a cada fila como cada receptor, y cada columna como estos valores de rebotes.
+% Así, tras finalizar la evaluación de rayos se acumularán todos los valores en cada fila, siendo el resultado final para cada receptor.
 
 \begin{algorithm}
     \caption{Bucle Principal}
-    \label{euclid}
+    \label{alg:euclid}
     \begin{algorithmic}[1]
         \State Leer parámetros.
         \State Cargar mapa.
@@ -50,8 +74,17 @@ El lanzamiento y evolución de cada rayo tiene varias fases a discutir.
 En primer lugar, una vez se ha determinado la dirección de lanzamiento se debe calcular la potencia a emitir.
 Habiendo importado la direccionalidad de la antena de emisión, se realiza una interpolación bidimiensional\footnote{En este caso esta interpolación ha sido bilineal. Aunque es posible obtener unos valores más precisos con métodos de mayor orden, partiendo de puntos separados solo un grado en ambos ángulos esta elección proporciona valores aceptables sin tener que abordar las condiciones de contorno en los extremos.} para determinar el valor exacto.
 
-Como se comentaba en la sección del fundamento teórico, en cada impacto se generarán dos rayos.
-Así, si este impacto llega a producirse, será necesario almacenar uno de los rayos producidos para ser evaluado más tarde.
+Una vez se ha lanzado, cada rayo buscará en primer lugar la pared contra la que impactará.
+Esta pared será la que proporcione una distancia de impacto menor.
+
+Tras ello, se buscarán los receptores contra los que impactará el rayo.
+En este caso se recorrerán todos los receptores colocados, y solo se considerarán como impactados aquellos para los que la distancia de impacto sea menor que la distancia de impacto contra la pared.
+
+Esta consideración se produce para evitar el impacto contra receptores que se encuentren detrás de una pared u objeto.
+
+Una vez se han recorrido ambos elementos, se habrá completado la interacción del rayo con el medio.
+Se determinará su punto de impacto: si lo hay, será el punto donde se generarán el rayo transmitido y el rayo reflejado.
+Se evaluará solo el rayo transmitido, por lo que el reflejado tendrá que ser almacenado.
 
 Este almacenamiento se hará en forma de pila, de tal forma que los rayos añadidos más recientemente serán los primeros en ser evaluados.
 Esta elección es totalmente arbitraria: todos los rayos son independientes entre sí.
@@ -59,21 +92,30 @@ Esta elección es totalmente arbitraria: todos los rayos son independientes entr
 Para optimizar el uso de memoria de la pila se reservará toda la memoria que se podría usar antes de iniciar el bucle y así no necesitar movimientos posteriores.
 El tamaño necesario vendrá determinado por el número de rebotes que se quieran registrar.
 
-% \begin{figure}[H]
-%     \centering
-%     \input{fig/memoria_pila.tex}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \input{fig/memoria_pila.tex}
+    \caption{Árbol generado por los impactos de los rayos hasta llegar a $h$ impactos. Los puntos negros indican los rayos reflejados, evaluados inmediatamente; los blancos, los transmitidos. En la línea punteada, el número máximo de rayos a almacenar.}
+    \label{fig:memoria_pila}
+\end{figure}
 
 En la Figura~\ref{fig:memoria_pila} se indica el árbol generado por un rayo, donde en cada impacto nacen dos rayos.
 Considerando que siempre se evalúa el rayo reflejado --en esta representación, el camino de la izquierda-- podría parecer que se deberá reservar memoria para todos los rayos restantes, pero es posible un uso menor.
 
 Los rayos guardados en la pila no son evaluados de forma inmediata, así que los rayos que se generan no se conocerán hasta que se llegue a su nodo.
-Es decir, el número de rayos en la pila no llegará nunca a ser tan alto.
+Es decir, el número de rayos en la pila no llegará nunca a ser tan alto, aunque es necesario dar un número de elementos a reservar.
 
+Para ello se asumirá que es imprescindible guardar todos los rayos recogidos en la línea punteada.
+Estos serán todos los elementos del árbol ($\sum_h 2^h$) menos el número de niveles que tenga, que será $h+1$ teniendo en cuenta que tal y como se indica, se ha empezado a contar desde el cero y así
+\begin{equation}
+    \text{\# Rayos a guardar} = \sum_{h=0}^{\infty} 2^h - (h+1)
+\end{equation}
+
+El Algoritmo~\ref{alg:ray} contiene, en pseudocódigo, la subroutina que evalúa cada rayo tal y como se ha descrito en la sección.
 
 \begin{algorithm}
     \caption{Bucle que evalúa cada rayo}
-    \label{euclid}
+    \label{alg:ray}
     \begin{algorithmic}[1]
         % \State Añadir pareja \{rayo inicial, 0\} a la pila.
         
@@ -110,6 +152,32 @@ Es decir, el número de rayos en la pila no llegará nunca a ser tan alto.
         \EndWhile
     \end{algorithmic}
 \end{algorithm}
+
+\subsubsection*{Registro en los receptores}
+
+Una vez los rayos se propagan de forma libre por el entorno se esparará a su impacto con cada uno de los receptores para registrar su efecto.
+
+Hay que tener en cuenta que se busca sumar la potencia recibida en cada receptor por parte de todos los rayos que los cruzen, pero con un detalle: no se pueden registrar todos los rayos sin más.
+
+Si se suma la potencia de cualquiera de los rayos que impactan contra un receptor se obtendrán potencias totales totalmente irreales, ya que, especialmente en el caso de receptores colocados a distancias cercanas al emisor, habrá una gran cantidad de rayos que, indicando un mismo frente de ondas, lleguen al impacto contra ellos.
+
+Este comportamiento es completamente irreal, fruto de la aproximación de la antena como esferas.
+El frente de ondas, representado por un solo rayo, solo debería cruzarla una vez y no un número mayor como ocurriría en este caso.
+
+La misma situación se presenta en los rebotes, con lo que se podría acabar con un exceso de potencia tanto en los rayos que llegan de forma directa como en los que llegan tras la interacción con las paredes u objetos.
+
+Para evitar esto solo se registrará el rayo con mayor potencia.
+Debido al gran decaimiento de la potencia con la distancia, esto indicará el rayo que impacte de forma más directa contra la esfera.
+En otro caso, la distancia adicional hará que su potencia sea menor.
+
+Además, se tendrá la consideración de los rebotes sufridos por el rayo.
+Si solo se toma el criterio anterior, solo se registrarían los rayos que impactan de forma directa.
+
+Para solventar este problema se asociará cada rayo al número de rebotes que ha sufrido.
+Así, una vez impacten con los receptores se considerará este valor, y cada vez que reboten contra algún objeto se actualizará.
+
+Los resultados se almacenarán considerando una matriz con tantas filas como receptores y tantas columnas como número máximo de rebotes a registrar.
+Cuando el cálculo finalice, se acumularán los resultados sumando los valores por filas en la primera columna obteniendo el resultado final de cada receptor.
 
 \subsection{Implementación en paralelo}
 
@@ -167,3 +235,10 @@ La cantidad de estos minibloques dependerá del valor del salto entre ángulos: 
 
 Dentro de cada uno de los minibloques solo habrá 16 pares de direcciones a evaluar, uno para cada hilo.
 Una vez todos estos hilos finalicen su bucle, se avanzará al siguiente minibloque en dirección vertical --es decir, avanzando en el eje $y$-- hasta acabar con todos los ángulos que se deben evaluar.
+
+\subsubsection{Aceleración del cómputo en paralelo}
+
+Una vez programadas ambas versiones de la simulación queda determinar la velocidad de ejecución de ambas.
+
+Como se explicaba en la sección anterior, en el caso de la tarjeta gráfica fue usada la Nvidia GTX1070, y para el caso del procesador fue usado un Intel i7-4270HQ.
+

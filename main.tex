@@ -20,9 +20,9 @@
 
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, babel}
-% \usepackage{pgfplots}
-% \pgfplotsset{compat=newest}
-% \usetikzlibrary{arrows,shapes,positioning,calc,babel,pgfplots.groupplots, pgfplots.statistics}
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest}
+\usetikzlibrary{arrows,shapes,positioning,calc,babel,pgfplots.groupplots, pgfplots.statistics}
 
 \usepackage[font=small,justification=centering]{caption}
 \usepackage{subcaption}
@@ -126,15 +126,15 @@
 \setcounter{figure}{0}
 
 \newpage
-\rhead[]{\small{2. Fundamento teórico}}
+\rhead[]{\small{2. Fundamento teórico y metodología}}
 
 \vspace*{0.2cm}
-\section{Fundamento teórico}
+\section{Fundamento teórico y metodología}
 
 \input{tex/fundamento_teorico.tex}
 
 %------------------------------------------------------------------------------
-%                    Implementación para la simulación
+%                    Simulación en serie y en paralelo
 %------------------------------------------------------------------------------
 \setcounter{table}{0}
 \setcounter{equation}{0}
@@ -144,7 +144,7 @@
 \rhead[]{\small{3. Implementación}}
 
 \vspace*{0.2cm}
-\section{Implementación para la simulación}
+\section{Simulación en serie y en paralelo}
 
 \input{tex/implementacion.tex}
 
@@ -178,28 +178,41 @@
 \vspace*{0.2cm}
 \section{Resultados}
 
-% \input{tex/resultados.tex}
+\input{tex/resultados.tex}
 
 %------------------------------------------------------------------------------
 %                             Conclusiones
 %------------------------------------------------------------------------------
 
 \newpage
+\vspace*{0.2cm}
 \section{Conclusiones}
 
 \input{tex/conclusiones.tex}
+
 
 %------------------------------------------------------------------------------
 %                             Bibliografía
 %------------------------------------------------------------------------------
 
 \newpage
+\vspace*{0.2cm}
+
 \section{Bibliografía}
 
 \begingroup
-    \renewcommand{\section}[2]{}%
-    \bibliography{refs} 
-    \bibliographystyle{ieeetr}
+\renewcommand{\section}[2]{}%
+\bibliography{refs} 
+\bibliographystyle{ieeetr}
 \endgroup
-    
+
+%------------------------------------------------------------------------------
+%                             Anexo
+%------------------------------------------------------------------------------
+
+\newpage
+\vspace*{0.2cm}
+\section*{Anexo}
+
+\input{tex/anexo.tex}
 \end{document}

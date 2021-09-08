@@ -29,26 +29,26 @@ En el campo de las ondas de radio su aplicación se ha aplicado principalmente p
 
 La simulaciones con trazado de rayos buscan encontrar este tipo de zonas antes de su implantación, de modo que sea posible corregir las posibles deficiencias y conseguir un posi- cionamiento óptimo de las antenas usadas.
 
-En este trabajo se plantea su uso en un escenario local. Como se comentaba al inicio, la señal de WiFi encontrará en los entornos donde se usa obstáculos en forma de paredes o grandes objetos que impidan su avance.
+En este trabajo se plantea su uso en un escenario local, en interiores. Como se comentaba al inicio, la señal de WiFi encontrará en los entornos donde se usa obstáculos en forma de paredes o grandes objetos que impidan su avance.
 
 Esto generará efectos de propagación multicamino, donde los rebotes de la señal en las paredes y obstáculos que se encuentren en su camino harán que en ciertos puntos lleguen, además de la señal original, una cierta potencia adicional fruto de estos rebotes.
 También encontraremos casos sin visión directa entre emisor y receptor, donde la señal recibida será exclusivamente la de estos rebotes.
 
 La mayor ventaja de esta aproximación respecto a otros métodos de resolución de la ecuación de ondas es la posibilidad de paralelización.
-Si se consideran los rayos independientes entre sí --es decir, se obvian los posibles efectos de interferencias-- se obtiene el caso idóneo de paralelización de código, donde no se necesitan barreras ni niguna otra técnica de programación paralela que necesite ralentizar la ejecución.
+Si se consideran los rayos independientes entre sí --es decir, se obvian los posibles efectos de interferencias-- se obtiene el caso idóneo de paralelización de código, donde no se necesitan barreras ni niguna otra técnica de programación paralela que pueda ralentizar la ejecución.
 
-Por ello, en este trabajo se plantea el uso de tarjetas gráficas.
+Por ello, en este trabajo se plantea el uso de GPUs --\textit{Graphic Processing Unit}--.
 Este tipo de dispositivos cuentan con un gran número de núcleos ya que estan planteados para tareas muy paralelizables, por lo que son idóneas para este caso.
 
 La programación en ese caso toma ciertas diferencias respecto a la programción para una CPU.
 Existen diferencias en la manera de tratar la ejecución y la memoria que requerirán un cierto cuidado a la hora de pasar de un dispositivo a otro.
 
-Así, los objetivos de este trabajo de fin de Máster serán
+De forma concreta, los objetivos de este Trabajo de Fin de Máster serán
 \begin{itemize}
     \item Diseñar e implementar un simulador de emisión de rayos que contemple su trayectoria en un entorno local.
-    \item Comprobar la aceleración de la ejecución de la simulación en tarjetas gráficas.
+    \item Implementar y estudiar la aceleración de la ejecución de la simulación en GPUs.
     \item Obtener datos en un entorno real con la ayuda de un robot autónomo y compararlos con los valores obtenidos en la simulación.
 \end{itemize}
 
-Con estos objetivos se busca aplicar las competencias adquiridos en el Máster en el ámbito de simulación de fenómenos naturales aplicando los conocimentos adquiridos sobre programación, especialmente la programación en paralelo.
+Con estos objetivos se busca aplicar las competencias adquiridos en el Máster en Simulación en Ciencias e Ingeniería en el ámbito de simulación de fenómenos naturales aplicando los conocimentos adquiridos sobre programación, especialmente la programación en paralelo.
 

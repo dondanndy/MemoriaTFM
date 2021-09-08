@@ -1,3 +1,9 @@
+A la hora de lanzar todos los rayos de la simulación y su evaluación se presentan dos vías: la ejecución en serie en una CPU usual y la ejecución en paralelo en una GPU.
+
+Aunque ambas opciones compartan gran parte de los cálculos, las diferentes estructuras entre los dispositivos hacen que se presenten diferencias a la hora de implementar la simulación.
+
+\subsection{Elementos comunes}
+
 Partiendo de las bases descritas en la sección anterior la simulación consistirá, de forma general, en lanzar rayos y acumular los resultados de los receptores.
 
 Aprovechando las ventajas de la programación orientada a objetos, se considerarán los siguientes clases:
@@ -22,7 +28,7 @@ Ya que para esta simulación el de el emisor y el receptor es el mismo, solo se 
 Este patrón, como se explicaba en la Sección~\ref{sec:antenas}, está generado directamente por MATLAB, y su formato es el de una matriz en el que cada uno de los ejes indica un ángulo.
 Su lectura y uso sigue el mismo formato.
 
-Una vez cargados todos los datos, se inicia el bucle principal, que consiste en dos bucles \textit{for} anidados que recorran el ángulo azimutal y el ángulo de elevación, avanzando con un cierto valor prefijado.
+Una vez cargados todos los datos, se inicia el bucle principal, deberá recorrer el ángulo azimutal y el ángulo de elevación avanzando con un cierto valor prefijado en ambos.
 En las subsecciones posteriores se profundizará en la evaluación de cada rayo.
 
 Una vez se han lanzado todos los rayos se acumulan los resultados --de nuevo, en las siguientes subsecciones se discutirá en detalle la estructura de memoria para estos resultados-- y se escriben en un archivo para su análisis posterior.
@@ -57,6 +63,7 @@ El Algoritmo~\ref{alg:euclid} recoge en pseudocódigo todo el proceso.
             \EndFor
         \EndFor
 
+        \Comment{Data indica la matriz donde se acumulan los resultados.}
         \For{$i\gets 0, rows(data)$}
             \ForAll{$j\gets 1, cols(data)$}
                 \State data[i][0] $\gets$ data[i][0] + data[i][j]
@@ -72,7 +79,7 @@ El Algoritmo~\ref{alg:euclid} recoge en pseudocódigo todo el proceso.
 El lanzamiento y evolución de cada rayo tiene varias fases a discutir.
 
 En primer lugar, una vez se ha determinado la dirección de lanzamiento se debe calcular la potencia a emitir.
-Habiendo importado la direccionalidad de la antena de emisión, se realiza una interpolación bidimiensional\footnote{En este caso esta interpolación ha sido bilineal. Aunque es posible obtener unos valores más precisos con métodos de mayor orden, partiendo de puntos separados solo un grado en ambos ángulos esta elección proporciona valores aceptables sin tener que abordar las condiciones de contorno en los extremos.} para determinar el valor exacto.
+Habiendo importado la direccionalidad de la antena de emisión, se realiza una interpolación bidimiensional\footnote{En este caso esta interpolación ha sido bilineal. Aunque es posible obtener unos valores más precisos con métodos de mayor orden, partiendo de puntos separados solo un grado en ambos ángulos esta elección proporciona valores aceptables sin tener que abordar las condiciones de contorno en los extremos.} para estimar el valor correspodiente.
 
 Una vez se ha lanzado, cada rayo buscará en primer lugar la pared contra la que impactará.
 Esta pared será la que proporcione una distancia de impacto menor.
@@ -137,7 +144,7 @@ El Algoritmo~\ref{alg:ray} contiene, en pseudocódigo, la subroutina que evalúa
                 \State hit\_dist $\gets$ INFINITY
                 \State power $\gets$ 0
                 \If{Receptor golpeado}
-                    \If{hit\_power > power and dist < hit\_dist}
+                    \If{hit\_power > power AND dist < hit\_dist}
                         \State hit\_power $\gets$ power
                     \EndIf
                 \EndIf
@@ -179,6 +186,14 @@ Así, una vez impacten con los receptores se considerará este valor, y cada vez
 Los resultados se almacenarán considerando una matriz con tantas filas como receptores y tantas columnas como número máximo de rebotes a registrar.
 Cuando el cálculo finalice, se acumularán los resultados sumando los valores por filas en la primera columna obteniendo el resultado final de cada receptor.
 
+\subsection{Implementación en serie}
+
+La implementación en serie de la simulación para ser ejecutada en una CPU sigue el procedimiento explicado en esta sección.
+
+Existirá una zona de memoria reservada para registrar los datos y simplemente se recurre a un doble bucle \textit{for} que irá completando los resultados evaluando cada par de ángulos avanzando con un cierto paso predefinido.
+
+Ya que la evaluación de cada rayto se realizará de forma totalmente secuencial, no será necesario añadir ninguna consideración adicional.
+
 \subsection{Implementación en paralelo}
 
 El hecho de que los rayos lanzados sean independientes entre sí convierte en el bucle principal en el escenario perfecto para ser ejecutado de forma paralela, ya que cada iteración del bucle no se verá interrumpida por las demás.
@@ -211,6 +226,7 @@ En el caso de la tarjeta gráfica usada, es de 48 KB\cite{Nvidia}.
 \begin{figure}[H]
     \centering
     \include{fig/CUDA_angulos.tex}
+    \vspace*{-0.75cm}
     \caption{Esquema con la asignación de ángulos a cada bloque de hilos.}
     \label{fig:CUDA_angulos}
 \end{figure}
@@ -225,7 +241,7 @@ Además de ser un valor bajo compatible con los límites establecidos, el númer
 
 La elección de asignación de valores angulares a los bloques será de forma fija: cada bloque solo evaluará 4 grados en cada dirección, independientemente del número de rayos que tenga asignado ejecutar.
 
-Está claro que si la distancia entre los ángulos de un grado, cada hilo ejecutará el rayo con los ángulos que le corresponde sin más.
+Si los saltos en el bucle del rayo es de un grado, cada hilo solo ejecutará el rayo con los ángulos que le corresponde sin más.
 En el caso --habitual-- que la distancia sea menor, cada hilo deberá evaluar más de un rayo.
 
 Para facilitar el recorrido y garantizar una ejecución lo más homogénea posible\footnote{Hay que tener en cuenta que la ejecución de los programas en tarjetas gráficas se realizan ejecutando una misma instrucción en varios hilos a la vez. Evitar expresiones condicionales que creen distintas ramas en el desarrollo del programa maximizará el rendimiento del dispositivo.}, solo se considerarán saltos en los valores angulares como potencias negativas de dos --es decir, solo se usarán saltos de valor $0.5$, $0.25$, $0.125$,...-- a fin de poder utilizar la siguiente estrategia.
@@ -236,9 +252,9 @@ La cantidad de estos minibloques dependerá del valor del salto entre ángulos: 
 Dentro de cada uno de los minibloques solo habrá 16 pares de direcciones a evaluar, uno para cada hilo.
 Una vez todos estos hilos finalicen su bucle, se avanzará al siguiente minibloque en dirección vertical --es decir, avanzando en el eje $y$-- hasta acabar con todos los ángulos que se deben evaluar.
 
-\subsubsection{Aceleración del cómputo en paralelo}
+% \subsubsection{Aceleración del cómputo en paralelo}
 
-Una vez programadas ambas versiones de la simulación queda determinar la velocidad de ejecución de ambas.
+% Una vez programadas ambas versiones de la simulación queda determinar la velocidad de ejecución de ambas.
 
-Como se explicaba en la sección anterior, en el caso de la tarjeta gráfica fue usada la Nvidia GTX1070, y para el caso del procesador fue usado un Intel i7-4270HQ.
+% Como se explicaba en la sección anterior, en el caso de la tarjeta gráfica fue usada la Nvidia GTX1070, y para el caso del procesador fue usado un Intel i7-4270HQ.
 

@@ -1,6 +1,6 @@
 Para comprobar cómo se ajusta el modelo al comportamiento real de la emisión se tomaron medidas en el Laboratorio de Robótica 0L3 del Instituto de Computación Científica Avanzada de la Universidad de Extremadura (ICCAEx), situado en los Institutos Universitarios de Investigación de la Universidad de Extremadura en Badajoz.
 
-En este laboratorio se dispone de una superficie amplia en la que fue posible usar un robot para automatizar la toma de medidas en divesos puntos, que más tarde fueron usados en la simulación colocando los receptores en dichos puntos.
+En este laboratorio se dispone de una superficie amplia en la que es posible usar un robot para automatizar la toma de medidas en divesos puntos, que más tarde fueron usados en la simulación colocando los receptores en dichos puntos.
 
 \begin{figure}[H]
     \centering
@@ -47,7 +47,7 @@ En la Figura~\ref{fig:robot} se puede ver el robot durante una de las tomas de m
     \label{fig:robot}
 \end{figure}
 
-El TurtleBot funciona con ROS --\textit{Robot Operating System}, en inglés--, un entorno de trabajo enfocado a los sistemas robóticos encargado del soporte para todos los dispositivos hardware del robot como motores, encoders o cámaras. 
+El TurtleBot funciona con ROS --\textit{Robot Operating System}, en inglés--,\cite{ROSDoc} un entorno de trabajo enfocado a los sistemas robóticos encargado del soporte para todos los dispositivos hardware del robot como motores, encoders o cámaras. 
 Cuenta con diversas librerías para distintos casos de uso, entre las que se encuentra la navegación en un entorno controlado como la que se da en el caso de este trabajo.
 
 Su funcionamiento se basa en una arquitectura de grafos, donde se definen \textit{nodos}, tareas en las que se realiza el procesamiento de sensores, control, actuadores o cualquier otra función.
@@ -55,7 +55,7 @@ Los nodos se comunican entre ellos con mensajes llamados \textit{topic}, y es po
 
 Dentro de los paquetes disponibles, el usado en el desarrollo del trabajo es el encargado de la navegación del robot, que permite desplazar al robot a cualquier punto del entorno de trabajo y proporcionar de forma constante su posición en el mapa.
 
-Es posible acoplar al robot un sistema de visión llamado Kinect que, mediante luz, permite obtener un mapa de profundidad del entorno que lo rodea.
+Es posible acoplar al robot un sistema de visión llamado Kinect que, mediante luz codificada, permite obtener un mapa de profundidad del entorno que lo rodea.
 Fue desarrollado en primera instancia para el uso en videojuegos pero su uso también se ha extendido a labores de investigación al permitir el posicionamiento de objetos y paredes, de tal manera que permite al robot evitar obstáculos dinámicos en el caso de que interpongan en su camino.
 
 La funcionalidad de navegación aprovecha estos sensores realizando una fusión de sus resultados con los datos de movimiento de los motores que impulsan al robot, de tal forma que es posible corregir cualquier error en casos donde el empuje de las ruedas no se traslade directamente en un desplazamiento del robot, como puede ocurrir al rotar sobre sí mismo.
@@ -64,7 +64,7 @@ Para conseguir el posicionamiento en el mapa el paquete de navegación utiliza u
 Junto a él trabaja un \textit{planner} local, en el que gracias a los sensores incorporados se evalúan de forma continua los alrededores del robot.
 Así, es posible conseguir de forma continua una evaluación de los posibles obstáculos que no se encuentran en el mapa del planner global, para lo que se construye un mapa de costes con el fin de abortar el movimiento en el caso de que sea imposible alcanzar el punto objetivo \cite{ROSDoc}.
 
-Con la información actualizada del \textit{planner} local, el \textit{planner} global es capaz de modificar los trayectos para que el robot pueda continuar su desplazamiento por el mapa.
+Con la información actualizada del \textit{planner} local, el \textit{planner} global es capaz de modificar las trayectorias para que el robot pueda continuar su desplazamiento por el mapa.
 Es posible observar un esquema del funcionamiento de estos sistemas en la Figura~\ref{fig:move_base}.
 
 \begin{figure}[H]
@@ -130,7 +130,7 @@ Si se coloca algún obstáculo en el camino del robot lo podrá evitar de forma 
 
 \subsection{Escenarios}
 
-Además del escenario del laboratorio sin ningún obstáculo, se utilizaron unas tablas de madera de dimensiones $1 \times 0.64 \times 0.02\si{\meter}$ forradas de forma parcial con papel de alumninio, de forma que pudieran presentar un cierto efecto de apantallamiento de la radiación en su dirección.
+Además del escenario del laboratorio sin ningún obstáculo, se utilizaron unas tablas de madera de dimensiones $1 \times 0.64 \times 0.02\si{\meter}$ forradas de forma parcial con papel de aluminio, de forma que pudieran presentar un cierto efecto de apantallamiento de la radiación en su dirección.
 
 Estas tablas, colocadas en dos configuraciones, proporcionaron otros dos escenarios con obstáculos para comprobar de manera más profunda el comportamiento del simulador.
 
@@ -167,7 +167,7 @@ Se colocó centrada horizontalmente, 1 metro por debajo del centro de la trayect
         \caption{Imagen del laboratorio en el escenario B.}
         % \label{fig:antena_receptor}
     \end{subfigure}
-    \caption{Diposición en el escenario B.}
+    \caption{Disposición en el escenario B.}
     \label{fig:escenarioB}
 \end{figure}
 
@@ -196,7 +196,7 @@ En cuanto a la distancia vertical, una de ellas se coloca a $1.5$ metros por enc
         \caption{Imagen del laboratorio en el escenario C.}
         % \label{fig:antena_receptor}
     \end{subfigure}
-    \caption{Diposición en el escenario C.}
+    \caption{Disposición en el escenario C.}
     \label{fig:escenarioC}
 \end{figure}
 
